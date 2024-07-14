@@ -1,6 +1,6 @@
 ﻿namespace SimpleChat.Library.Constants
 {
-    public class ConnectionNames
+    public static class ConnectionNames
     {
         public const string DefaultConnection = "DefaultConnection";
     }

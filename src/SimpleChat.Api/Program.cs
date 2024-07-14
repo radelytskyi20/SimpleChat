@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleChat.Library.Constants;
 using SimpleChat.Library.Data;
+using SimpleChat.Library.Interfaces;
+using SimpleChat.Library.Models;
+using SimpleChat.Library.Repos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString(ConnectionNames.DefaultConnection));
 });
+
+builder.Services.AddTransient<IRepo<User>, UsersRepo>();
 
 var app = builder.Build();
 

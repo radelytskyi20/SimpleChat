@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SimpleChat.Library.Interfaces;
 
 namespace SimpleChat.Library.Models
 {
-    public class Chat
+    public class Chat : IIdentifiable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
