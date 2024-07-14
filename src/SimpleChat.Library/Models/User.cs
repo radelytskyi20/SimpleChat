@@ -1,6 +1,7 @@
 ﻿using SimpleChat.Library.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SimpleChat.Library.Models
 {
@@ -13,7 +14,11 @@ namespace SimpleChat.Library.Models
 
         [Required]
         public string Name { get; set; } = string.Empty;
+
+        [JsonIgnore]
         public List<Chat> ChatsCreated { get; set; } = new();
+
+        [JsonIgnore]
         public List<Chat> Chats { get; set; } = new();
     }
 }

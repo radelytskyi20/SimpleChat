@@ -44,6 +44,7 @@ namespace SimpleChat.Api.Controllers
         [HttpDelete(RepoActions.Remove)]
         public async Task<IActionResult> Remove([FromQuery] Guid id)
         {
+            //todo: if there are any chats created by this user, remove them => add this check
             try
             {
                 await _repo.DeleteAsync(id);
