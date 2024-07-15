@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleChat.Library.Constants;
 using SimpleChat.Library.Data;
+using SimpleChat.Library.Hubs;
 using SimpleChat.Library.Interfaces;
 using SimpleChat.Library.Models;
 using SimpleChat.Library.Repos;
@@ -13,6 +14,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -45,5 +47,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chat");
 
 app.Run();

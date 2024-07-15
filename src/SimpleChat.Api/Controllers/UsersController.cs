@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleChat.Library.Constants;
 using SimpleChat.Library.Interfaces;
 using SimpleChat.Library.Models;
-using SimpleChat.Library.Requests;
+using SimpleChat.Library.Requests.Users;
 
 namespace SimpleChat.Api.Controllers
 {

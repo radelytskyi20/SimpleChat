@@ -1,4 +1,4 @@
-﻿namespace SimpleChat.Library.Requests
+﻿namespace SimpleChat.Library.Requests.Users
 {
     public class UpdateUserRequest
     {

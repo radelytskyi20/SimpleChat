@@ -24,5 +24,8 @@ namespace SimpleChat.Library.Models
         [Required]
         public User? User { get; set; }
         public List<User> Users { get; set; } = new();
+        public List<Message> Messages { get; set; } = new();
+
+        public bool IsUserInChat(Guid userId) => Users.Any(u => u.Id == userId);
     }
 }

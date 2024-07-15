@@ -20,5 +20,6 @@ namespace SimpleChat.Library.Models
 
         [JsonIgnore]
         public List<Chat> Chats { get; set; } = new();
+        public List<Message> Messages { get; set; } = new();
     }
 }
