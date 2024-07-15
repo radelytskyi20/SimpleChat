@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using SimpleChat.Library.Interfaces;
 using SimpleChat.Library.Models;
 
@@ -8,11 +9,15 @@ namespace SimpleChat.Library.Hubs
     {
         private readonly IRepo<Chat> _chatsRepo;
         private readonly IRepo<User> _usersRepo;
+        private readonly IRepo<Message> _messagesRepo;
+        private readonly ILogger<ChatHub> _logger;
 
-        public ChatHub(IRepo<Chat> chatsRepo, IRepo<User> usersRepo)
+        public ChatHub(IRepo<Chat> chatsRepo, IRepo<User> usersRepo, IRepo<Message> messagesRepo, ILogger<ChatHub> logger)
         {
             _chatsRepo = chatsRepo;
             _usersRepo = usersRepo;
+            _messagesRepo = messagesRepo;
+            _logger = logger;
         }
 
         public async Task SendMessage(Guid chatId, Guid userId, string message)
@@ -37,10 +42,9 @@ namespace SimpleChat.Library.Hubs
                     Chat = chat
                 };
 
-                //toDo: add message to Db
-
-                await JoinChat(chat.Id, user);
+                await JoinChat(chat.Id);
                 await Clients.Group(chatId.ToString()).SendAsync("onMessageReceived", chatMessage.ToString());
+                await _messagesRepo.AddAsync(chatMessage);
             }
             catch (Exception ex)
             {
@@ -61,8 +65,9 @@ namespace SimpleChat.Library.Hubs
                     await _chatsRepo.UpdateAsync(chat);
                 }
 
-                await JoinChat(chat.Id, user);
-                await Clients.Caller.SendAsync("onJoinedChat", $"{user.Name}({user.Id}): connected to {chat.Name}({chat.Id}) chat");
+                await JoinChat(chat.Id);
+                await Clients.Caller.SendAsync("onJoinedChat", $"You join chat: {chat.Name}({chat.Id})");
+                await Clients.OthersInGroup(chat.Id.ToString()).SendAsync("onJoinedChat", $"{user.Name}({user.Id}): connected to {chat.Name}({chat.Id}) chat");
             }
             catch (Exception ex)
             {
@@ -90,14 +95,18 @@ namespace SimpleChat.Library.Hubs
             chat.Users.Remove(user);
             await _chatsRepo.UpdateAsync(chat);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, chat.Id.ToString());
-            await Clients.Caller.SendAsync("onLeftChat", $"{user.Name}({user.Id}): disconnected from {chat.Name}({chat.Id}) chat");
+
+            await Clients.Caller.SendAsync("onLeftChat", $"You left chat: {chat.Name}({chat.Id})");
+            await Clients.OthersInGroup(chat.Id.ToString()).SendAsync("onLeftChat", $"{user.Name}({user.Id}): disconnected from {chat.Name}({chat.Id}) chat");
         }
 
-        private async Task JoinChat(Guid chatId, User user)
+        public override Task OnConnectedAsync()
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatId.ToString());
-            await Clients.OthersInGroup(chatId.ToString()).SendAsync("addUser", user);
+            _logger.LogInformation("Client connected: {ConnectionId}", Context.ConnectionId);
+            return base.OnConnectedAsync();
         }
+
+        private async Task JoinChat(Guid chatId) => await Groups.AddToGroupAsync(Context.ConnectionId, chatId.ToString());
         private async Task<(User? user, Chat? chat)> GetUserAndChat(Guid userId, Guid chatId)
         {
             var chat = await _chatsRepo.GetOneAsync(chatId);

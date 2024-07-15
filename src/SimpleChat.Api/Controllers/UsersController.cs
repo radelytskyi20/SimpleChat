@@ -101,6 +101,21 @@ namespace SimpleChat.Api.Controllers
             }
         }
 
+        [HttpGet($"{RepoActions.GetAll}/{{name}}")]
+        public async Task<IActionResult> GetAll(string name)
+        {
+            try
+            {
+                var users = await _repo.GetAllAsync();
+                var filteredUsers = users.Where(u => u.Name.Contains(name)).ToList();
+                return Ok(filteredUsers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetOne([FromQuery] Guid id)
         {

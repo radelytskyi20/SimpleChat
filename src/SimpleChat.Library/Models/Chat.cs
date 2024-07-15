@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SimpleChat.Library.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace SimpleChat.Library.Models
 {
@@ -24,6 +25,8 @@ namespace SimpleChat.Library.Models
         [Required]
         public User? AdminUser { get; set; }
         public List<User> Users { get; set; } = new();
+
+        [JsonIgnore]
         public List<Message> Messages { get; set; } = new();
 
         public bool IsUserInChat(Guid userId) => Users.Any(u => u.Id == userId);

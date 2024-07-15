@@ -13,6 +13,7 @@ namespace SimpleChat.Library.Repos
             return await Table
                 .Include(c => c.AdminUser)
                 .Include(c => c.Users)
+                .Include(c => c.Messages)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -21,6 +22,7 @@ namespace SimpleChat.Library.Repos
             return await Table
                 .Include(c => c.AdminUser)
                 .Include(c => c.Users)
+                .Include(c => c.Messages)
                 .ToListAsync();
         }
     }

@@ -23,6 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<IRepo<User>, UsersRepo>();
 builder.Services.AddTransient<IRepo<Chat>, ChatsRepo>();
+builder.Services.AddTransient<IRepo<Message>, MessagesRepo>();
 
 var app = builder.Build();
 

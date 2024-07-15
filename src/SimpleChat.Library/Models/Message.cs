@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SimpleChat.Library.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SimpleChat.Library.Models
 {
-    public class Message
+    public class Message : IIdentifiable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,7 +25,10 @@ namespace SimpleChat.Library.Models
         [ForeignKey("ChatId")]
         public Guid ChatId { get; set; }
 
+        [JsonIgnore]
         public User? User { get; set; }
+
+        [JsonIgnore]
         public Chat? Chat { get; set; }
 
         public override string ToString() => $"{Chat?.Name}({Chat?.Id}) | {User?.Name}({User?.Id}): {Content} - {SentTime.ToShortTimeString()}";

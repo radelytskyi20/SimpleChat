@@ -129,6 +129,42 @@ namespace SimpleChat.Api.Controllers
             }
         }
 
+        [HttpGet($"{RepoActions.GetAll}/user")]
+        public async Task<IActionResult> GetAll([FromQuery] Guid id)
+        {
+            try
+            {
+                var user = await _usersRepo.GetOneAsync(id);
+                if (user == null)
+                {
+                    return BadRequest($"User with id {id} was not found");
+                }
+
+                var chats = await _chatsRepo.GetAllAsync();
+                var userChats = chats.Where(c => c.IsUserInChat(id)).ToList();
+                return Ok(userChats);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet($"{RepoActions.GetAll}/{{name}}")]
+        public async Task<IActionResult> GetAll([FromRoute] string name)
+        {
+            try
+            {
+                var chats = await _chatsRepo.GetAllAsync();
+                var filteredChats = chats.Where(c => c.Name.Contains(name)).ToList();
+                return Ok(filteredChats);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetOne([FromQuery] Guid id)
         {
