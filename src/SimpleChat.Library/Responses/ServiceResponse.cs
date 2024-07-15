@@ -12,7 +12,7 @@
             Errors = errors;
         }
 
-        public T Payload { get; set; } = default;
+        public T Payload { get; set; } = default!;
         public ICollection<string> Errors { get; init; } = new List<string>();
         public bool IsSuccessfull => Errors.Count == 0;
     }
