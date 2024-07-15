@@ -11,9 +11,9 @@ services:
   # api:
   #   build:
   #     context: .
-  #     dockerfile: Api_Dockerfile_Debug
+  #     dockerfile: ./src/SimpleChat.Api/Dockerfile
   #   container_name: api
-  #   image: "api-debug"
+  #   image: "api-release"
   #   ports:
   #     - "5008:5008"
   #   entrypoint: /bin/sh -c "dotnet SimpleChat.Api.dll"
