@@ -48,7 +48,7 @@ namespace SimpleChat.Library.Hubs
             }
         }
 
-        public async Task JoinChat(Guid userId, Guid chatId)
+        public async Task JoinChat(Guid chatId, Guid userId)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace SimpleChat.Library.Hubs
             }
         }
 
-        public async Task LeaveChat(Guid userId, Guid chatId)
+        public async Task LeaveChat(Guid chatId, Guid userId)
         {
             var (user, chat) = await GetUserAndChat(userId, chatId);
             if (user == null || chat == null) { return; }
@@ -81,7 +81,7 @@ namespace SimpleChat.Library.Hubs
                 return;
             }
 
-            if (chat.UserId == user.Id)
+            if (chat.AdminId == user.Id)
             {
                 await Clients.Caller.SendAsync("onError", $"User with id {userId} is an admin of chat with id {chatId}. Admin cannot leave chat");
                 return;

@@ -12,11 +12,18 @@ namespace SimpleChat.Library.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Chat>()
-                .HasOne(c => c.User)
+                .HasOne(c => c.AdminUser)
                 .WithMany(u => u.ChatsCreated)
-                .HasForeignKey(c => c.UserId)
+                .HasForeignKey(c => c.AdminId)
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Chat)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ChatId)
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Chat>()
                 .HasMany(c => c.Users)
@@ -26,5 +33,6 @@ namespace SimpleChat.Library.Data
 
         public virtual DbSet<Chat> Chats { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
     }
 }

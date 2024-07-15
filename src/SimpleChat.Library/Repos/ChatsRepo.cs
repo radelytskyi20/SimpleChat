@@ -11,7 +11,7 @@ namespace SimpleChat.Library.Repos
         public override async Task<Chat?> GetOneAsync(Guid id)
         {
             return await Table
-                .Include(c => c.User)
+                .Include(c => c.AdminUser)
                 .Include(c => c.Users)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
@@ -19,7 +19,7 @@ namespace SimpleChat.Library.Repos
         public override async Task<IEnumerable<Chat>> GetAllAsync()
         {
             return await Table
-                .Include(c => c.User)
+                .Include(c => c.AdminUser)
                 .Include(c => c.Users)
                 .ToListAsync();
         }

@@ -44,9 +44,19 @@ namespace SimpleChat.Api.Controllers
         [HttpDelete(RepoActions.Remove)]
         public async Task<IActionResult> Remove([FromQuery] Guid id)
         {
-            //todo: if there are any chats created by this user, remove them => add this check
             try
             {
+                var user = await _repo.GetOneAsync(id);
+                if (user == null)
+                {
+                    return BadRequest($"User with id {id} was not found");
+                }
+
+                if (user.ChatsCreated.Count != 0)
+                {
+                    return BadRequest($"User with id {id} cannot be deleted because they are the creator of one or more chats");
+                }
+
                 await _repo.DeleteAsync(id);
                 return NoContent();
             }
@@ -64,7 +74,7 @@ namespace SimpleChat.Api.Controllers
                 var userToBeUpdated = await _repo.GetOneAsync(request.Id);
                 if (userToBeUpdated == null)
                 {
-                    return BadRequest($"User with given id {request.Id} was not found");
+                    return BadRequest($"User with id {request.Id} was not found");
                 }
 
                 userToBeUpdated.Name = request.Name;

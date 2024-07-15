@@ -18,11 +18,11 @@ namespace SimpleChat.Library.Models
         [Required]
         public DateTime Created { get; set; }
 
-        [ForeignKey("User")]
-        public Guid UserId { get; set; }
+        [ForeignKey("Admin")]
+        public Guid AdminId { get; set; }
 
         [Required]
-        public User? User { get; set; }
+        public User? AdminUser { get; set; }
         public List<User> Users { get; set; } = new();
         public List<Message> Messages { get; set; } = new();
 

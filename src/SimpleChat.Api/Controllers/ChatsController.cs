@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using SimpleChat.Library.Constants;
+using SimpleChat.Library.Hubs;
 using SimpleChat.Library.Interfaces;
 using SimpleChat.Library.Models;
 using SimpleChat.Library.Requests.Chats;
@@ -14,12 +16,14 @@ namespace SimpleChat.Api.Controllers
     {
         private readonly IRepo<Chat> _chatsRepo;
         private readonly IRepo<User> _usersRepo;
+        private readonly IHubContext<ChatHub> _chatHub;
         private readonly ILogger<ChatsController> _logger;
 
-        public ChatsController(IRepo<Chat> chatsRepo, IRepo<User> usersRepo, ILogger<ChatsController> logger)
+        public ChatsController(IRepo<Chat> chatsRepo, IRepo<User> usersRepo, IHubContext<ChatHub> chatHub, ILogger<ChatsController> logger)
         {
             _chatsRepo = chatsRepo;
             _usersRepo = usersRepo;
+            _chatHub = chatHub;
             _logger = logger;
         }
 
@@ -34,7 +38,7 @@ namespace SimpleChat.Api.Controllers
                     return BadRequest($"Unable to create new chat. User with given id {request.UserId} does not exist");
                 }
 
-                var chat = new Chat() { Id = Guid.NewGuid(), Name = request.Name, Created = DateTime.UtcNow, User = adminUser };
+                var chat = new Chat() { Id = Guid.NewGuid(), Name = request.Name, Created = DateTime.UtcNow, AdminUser = adminUser };
                 chat.Users.Add(adminUser);
 
                 var chatId = await _chatsRepo.AddAsync(chat);
@@ -47,12 +51,26 @@ namespace SimpleChat.Api.Controllers
         }
 
         [HttpDelete(RepoActions.Remove)]
-        public async Task<IActionResult> Remove([FromQuery] Guid id)
+        public async Task<IActionResult> Remove([FromBody] RemoveChatRequest request)
         {
-            //Todo: check if user is admin of chat
             try
             {
-                await _chatsRepo.DeleteAsync(id);
+                var chat = await _chatsRepo.GetOneAsync(request.ChatId);
+                if (chat == null)
+                {
+                    return BadRequest($"Chat with given id {request.ChatId} was not found");
+                }
+
+                if (chat.AdminId != request.AdminId)
+                {
+                    return BadRequest($"User with given id {request.AdminId} is not an admin of chat with id {request.ChatId}");
+                }
+
+                foreach (var user in chat.Users)
+                    await _chatHub.Clients.Group(chat.Id.ToString()).SendAsync("onLeftChat", $"{user.Name}({user.Id}): disconnected from {chat.Name}({chat.Id}) chat");
+
+                await _chatHub.Clients.Group(chat.Id.ToString()).SendAsync("onChatDeleted", $"{chat.Name}({chat.Id}): chat has been removed");
+                await _chatsRepo.DeleteAsync(request.ChatId);
                 return NoContent();
             }
             catch (Exception ex)
@@ -72,16 +90,23 @@ namespace SimpleChat.Api.Controllers
                     return BadRequest($"Chat with given id {request.ChatId} was not found");
                 }
 
-                if (request.AdminUserId != chatToUpdate.UserId)
+                if (request.AdminId != chatToUpdate.AdminId)
                 {
-                    return BadRequest($"User with given id {request.AdminUserId} is not an admin of chat with id {request.ChatId}");
+                    return BadRequest($"User with given id {request.AdminId} is not an admin of chat with id {request.ChatId}");
                 }
+                var adminUser = await _usersRepo.GetOneAsync(request.NewAdminId ?? chatToUpdate.AdminId);
 
-                var adminUser = await _usersRepo.GetOneAsync(request.UserId ?? chatToUpdate.UserId);
+                var oldChatName = chatToUpdate.Name;
+                var oldAdminName = chatToUpdate.AdminUser?.Name;
+                var oldAdminId = chatToUpdate.AdminUser?.Id;
+
                 chatToUpdate.Name = request.Name;
-                chatToUpdate.User = adminUser;
+                chatToUpdate.AdminUser = adminUser;
 
                 await _chatsRepo.UpdateAsync(chatToUpdate);
+                await _chatHub.Clients.Group(chatToUpdate.Id.ToString()).SendAsync("onChatUpdated", $"{oldChatName}({chatToUpdate.Id}) - {oldAdminName}({oldAdminId}) " +
+                    $"-> {chatToUpdate.Name}({chatToUpdate.Id}) - {chatToUpdate?.AdminUser?.Name}({chatToUpdate?.AdminUser?.Id}) chat has been updated");
+
                 return Ok(chatToUpdate);
             }
             catch (Exception ex)
