@@ -23,16 +23,15 @@ namespace SimpleChat.Api.Controllers
         }
 
         [HttpPost(RepoActions.Add)]
-        public async Task<IActionResult> Add([FromQuery] string name)
+        public async Task<IActionResult> Add([FromBody] User user)
         {
             try
             {
-                if (string.IsNullOrEmpty(name))
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest();
+                    return BadRequest(ModelState.Values);
                 }
 
-                var user = new User() { Id = Guid.NewGuid(), Name = name };
                 var userId = await _repo.AddAsync(user);
                 return Ok(userId);
             }
@@ -43,7 +42,7 @@ namespace SimpleChat.Api.Controllers
                     .WithMethod(nameof(Add))
                     .WithComment(ex.Message)
                     .WithOperation(RepoActions.Add)
-                    .WithParametres($"{nameof(name)}: {name}")
+                    .WithParametres($"{nameof(user.Id)}: {user.Id}")
                     .ToString()
                 );
 
@@ -139,7 +138,7 @@ namespace SimpleChat.Api.Controllers
         }
 
         [HttpGet(UsersRoutes.GetAllByName)]
-        public async Task<IActionResult> GetAll(string name)
+        public async Task<IActionResult> GetAll([FromRoute] string name)
         {
             try
             {

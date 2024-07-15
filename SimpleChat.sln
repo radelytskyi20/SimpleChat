@@ -14,7 +14,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChat.Api", "src\Simpl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{40B7282D-791D-4346-872E-71FD56E147E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChat.Library", "src\SimpleChat.Library\SimpleChat.Library.csproj", "{52A2AE52-B9A0-4DE3-A2AA-4CD27C5CD8E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChat.Library", "src\SimpleChat.Library\SimpleChat.Library.csproj", "{52A2AE52-B9A0-4DE3-A2AA-4CD27C5CD8E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7DF39033-F54F-495D-A3F2-BE964F02D0C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChat.Api.Tests", "src\SimpleChat.Api.Tests\SimpleChat.Api.Tests.csproj", "{B497A1B8-F6A4-4C7C-B9FB-4DB8ADE1204E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +34,10 @@ Global
 		{52A2AE52-B9A0-4DE3-A2AA-4CD27C5CD8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A2AE52-B9A0-4DE3-A2AA-4CD27C5CD8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52A2AE52-B9A0-4DE3-A2AA-4CD27C5CD8E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B497A1B8-F6A4-4C7C-B9FB-4DB8ADE1204E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B497A1B8-F6A4-4C7C-B9FB-4DB8ADE1204E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B497A1B8-F6A4-4C7C-B9FB-4DB8ADE1204E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B497A1B8-F6A4-4C7C-B9FB-4DB8ADE1204E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +45,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{85314EDB-3C11-499D-B608-46B326492203} = {ADAC6A2F-278F-42FC-A759-EF00C6574846}
 		{52A2AE52-B9A0-4DE3-A2AA-4CD27C5CD8E4} = {40B7282D-791D-4346-872E-71FD56E147E7}
+		{B497A1B8-F6A4-4C7C-B9FB-4DB8ADE1204E} = {7DF39033-F54F-495D-A3F2-BE964F02D0C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {336F0BAE-70EF-4EB2-8450-31E18348D3BB}
