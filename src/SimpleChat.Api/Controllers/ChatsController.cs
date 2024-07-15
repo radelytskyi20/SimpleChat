@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using SimpleChat.Library.Constants;
 using SimpleChat.Library.Hubs;
 using SimpleChat.Library.Interfaces;
+using SimpleChat.Library.Logging;
 using SimpleChat.Library.Models;
 using SimpleChat.Library.Requests.Chats;
 
@@ -46,7 +48,16 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(Add))
+                    .WithComment(ex.Message)
+                    .WithOperation(RepoActions.Add)
+                    .WithParametres($"{nameof(request.Name)}: {request.Name}, {nameof(request.UserId)}: {request.UserId}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
@@ -75,7 +86,16 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(Remove))
+                    .WithComment(ex.Message)
+                    .WithOperation(RepoActions.Remove)
+                    .WithParametres($"{nameof(request.ChatId)}: {request.ChatId}, {nameof(request.AdminId)}: {request.AdminId}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
@@ -111,7 +131,17 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(Update))
+                    .WithComment(ex.Message)
+                    .WithOperation(RepoActions.Update)
+                    .WithParametres($"{nameof(request.ChatId)}: {request.ChatId}, {nameof(request.Name)}: {request.Name}, {nameof(request.NewAdminId)}: {request.NewAdminId}," +
+                    $"{nameof(request.AdminId)}: {request.AdminId}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
@@ -125,11 +155,19 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(GetAll))
+                    .WithComment(ex.Message)
+                    .WithOperation(RepoActions.GetAll)
+                    .WithParametres(LoggingConstants.NoParameters)
+                    .ToString()
+                );
+                
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
-
-        [HttpGet($"{RepoActions.GetAll}/user")]
+        [HttpGet(ChatsRoutes.GetAllByUser)]
         public async Task<IActionResult> GetAll([FromQuery] Guid id)
         {
             try
@@ -146,11 +184,20 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(GetAll))
+                    .WithComment(ex.Message)
+                    .WithOperation(ChatsRoutes.GetAllByUser)
+                    .WithParametres($"{nameof(id)}: {id}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
-        [HttpGet($"{RepoActions.GetAll}/{{name}}")]
+        [HttpGet(ChatsRoutes.GetAllByName)]
         public async Task<IActionResult> GetAll([FromRoute] string name)
         {
             try
@@ -161,7 +208,16 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(GetAll))
+                    .WithComment(ex.Message)
+                    .WithOperation(ChatsRoutes.GetAllByName)
+                    .WithParametres($"{nameof(name)}: {name}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
@@ -180,7 +236,16 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(ChatsController))
+                    .WithMethod(nameof(GetOne))
+                    .WithComment(ex.Message)
+                    .WithOperation("Get")
+                    .WithParametres($"{nameof(id)}: {id}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
     }

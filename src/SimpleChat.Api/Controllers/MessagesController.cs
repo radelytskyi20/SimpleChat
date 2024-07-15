@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleChat.Library.Constants;
 using SimpleChat.Library.Interfaces;
+using SimpleChat.Library.Logging;
 using SimpleChat.Library.Models;
 
 namespace SimpleChat.Api.Controllers
@@ -39,7 +40,16 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(MessagesController))
+                    .WithMethod(nameof(GetOne))
+                    .WithComment(ex.Message)
+                    .WithOperation("Get")
+                    .WithParametres($"{nameof(id)}: {id}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
@@ -53,11 +63,20 @@ namespace SimpleChat.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(MessagesController))
+                    .WithMethod(nameof(GetAll))
+                    .WithComment(ex.Message)
+                    .WithOperation(RepoActions.GetAll)
+                    .WithParametres(LoggingConstants.NoParameters)
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
-        [HttpGet($"{RepoActions.GetAll}/chat")]
+        [HttpGet(MessagesRoutes.GetAllByChat)]
         public async Task<IActionResult> GetAllChat([FromQuery] Guid id)
         {
             try
@@ -68,20 +87,25 @@ namespace SimpleChat.Api.Controllers
                     return BadRequest($"Chat with id {id} was not found");
                 }
 
-                var chatMessages = chat.Messages
-                    .OrderByDescending(m => m.SentTime)
-                    .Select(m => m.ToString())
-                    .ToList();
-                
+                var chatMessages = chat.Messages.OrderByDescending(m => m.SentTime).ToList();
                 return Ok(chatMessages);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(MessagesController))
+                    .WithMethod(nameof(GetAllChat))
+                    .WithComment(ex.Message)
+                    .WithOperation(MessagesRoutes.GetAllByChat)
+                    .WithParametres($"{nameof(id)}: {id}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
 
-        [HttpGet($"{RepoActions.GetAll}/user")]
+        [HttpGet(MessagesRoutes.GetAllByUser)]
         public async Task<IActionResult> GetAllUser([FromQuery] Guid id)
         {
             try
@@ -92,16 +116,21 @@ namespace SimpleChat.Api.Controllers
                     return BadRequest($"User with id {id} was not found");
                 }
 
-                var userMessages = user.Messages
-                    .OrderByDescending(m => m.SentTime)
-                    .Select(m => m.ToString())
-                    .ToList();
-
+                var userMessages = user.Messages.OrderByDescending(m => m.SentTime).ToList();
                 return Ok(userMessages);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(new LogEntry()
+                    .WithClass(nameof(MessagesController))
+                    .WithMethod(nameof(GetAllUser))
+                    .WithComment(ex.Message)
+                    .WithOperation(MessagesRoutes.GetAllByUser)
+                    .WithParametres($"{nameof(id)}: {id}")
+                    .ToString()
+                );
+
+                return StatusCode(500, LoggingConstants.InternalServerErrorMessage);
             }
         }
     }
