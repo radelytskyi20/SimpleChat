@@ -1,0 +1,24 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    ports:
+      - "5533:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Pass12345$
+  
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: ./src/SimpleChat.Api/Dockerfile
+  #   container_name: api
+  #   image: "api-release"
+  #   ports:
+  #     - "5008:5008"
+  #   entrypoint: /bin/sh -c "dotnet SimpleChat.Api.dll"
+  #   environment:
+  #     - ASPNETCORE_URLS=http://+:5008
+  #     - ASPNETCORE_ENVIRONMENT=Docker
+  #   depends_on:
+  #     - mssql
